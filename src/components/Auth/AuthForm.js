@@ -6,6 +6,7 @@ const AuthForm = () => {
   const emailInputRef = useRef();
   const passwordInputRef = useRef();
   const [isLogin, setIsLogin] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
 
   const switchAuthModeHandler = () => {
     setIsLogin((prevState) => !prevState);
@@ -20,6 +21,7 @@ const AuthForm = () => {
 
     if (isLogin) {
     } else {
+      setIsLoading(true);
       fetch(
         "https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyBuMvzndMCLl88fz3-e_sPeWqPfw1Kyyzk",
         {
@@ -34,12 +36,17 @@ const AuthForm = () => {
           },
         }
       ).then((res) => {
+        isLoading(false);
         if (res.ok) {
           //...
         } else {
           return res.json().then((data) => {
             //show an error model
-            console.log(data);
+            let errorMessage = "Authentication failed";
+            if (data && data.error && data.error.message) {
+              errorMessage = data.error.message;
+            }
+            alert(errorMessage);
           });
         }
       });
